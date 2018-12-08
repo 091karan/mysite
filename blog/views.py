@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from blog.models import Post, Comment
+from blog.models import Post, Comment,Profile
 from django.utils import timezone
 from blog.forms import PostForm, CommentForm
 from django.contrib.auth.models import User
@@ -127,3 +127,14 @@ def comment_remove(request, pk):
     post_pk = comment.post.pk
     comment.delete()
     return redirect('post_detail', pk=post_pk)
+
+@login_required
+def userdetials(request,pk):
+    if request.method == "POST":
+        user = User.objects.get(pk=pk)
+        user.profile.photo = request.FILES['photo']
+        user.save()
+        return render(request,'blog/post_list.html')
+    else:
+        user = get_object_or_404(User,id=pk)
+        return render(request,'blog/user_details.html',{'user':user})
